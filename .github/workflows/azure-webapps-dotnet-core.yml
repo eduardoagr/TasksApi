@@ -25,13 +25,13 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore dependencies
-        run: dotnet restore "TasksApi/TasksApi.csproj"
+        run: dotnet restore "TasksApi.csproj"
 
       - name: Build
-        run: dotnet build "TasksApi/TasksApi.csproj" --configuration Release
+        run: dotnet build "TasksApi.csproj" --configuration Release
 
       - name: Publish
-        run: dotnet publish "TasksApi/TasksApi.csproj" -c Release -o "${{ github.workspace }}/published"
+        run: dotnet publish "TasksApi.csproj" -c Release -o "${{ github.workspace }}/published"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
