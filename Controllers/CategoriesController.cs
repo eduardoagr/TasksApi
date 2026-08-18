@@ -90,6 +90,7 @@ public class CategoriesController(AppDbContext context) : ControllerBase {
 
     [HttpDelete("reset")]
     public async Task<IActionResult> ResetCategories() {
+
         // Delete all tasks
         var allTasks = await context.Tasks.ToListAsync();
         context.Tasks.RemoveRange(allTasks);
