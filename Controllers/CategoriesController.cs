@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using TasksApi.Data;
 using TasksApi.Models;
 
-namespace TasksApi.Controllers; 
+namespace TasksApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -71,7 +71,7 @@ public class CategoriesController(AppDbContext context) : ControllerBase {
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCategory(int id) {
-       
+
         var category = await context.Categories
             .Include(t => t.Tasks)
             .FirstOrDefaultAsync(c => c.Id == id);
@@ -87,4 +87,33 @@ public class CategoriesController(AppDbContext context) : ControllerBase {
 
         return Ok(new { message = "Category deleted.", id });
     }
+
+    [HttpDelete("reset")]
+    public async Task<IActionResult> ResetCategories() {
+        // Delete all tasks
+        var allTasks = await context.Tasks.ToListAsync();
+        context.Tasks.RemoveRange(allTasks);
+
+        // Delete all categories
+        var allCategories = await context.Categories.ToListAsync();
+        context.Categories.RemoveRange(allCategories);
+
+        await context.SaveChangesAsync();
+
+        // Recreate default categories
+        var defaultCategories = new List<Category>
+        {
+             new() { Name = "Backlog" },
+             new() { Name = "Planned" },
+             new() { Name = "Doing" },
+             new() { Name = "Done" },
+             new() { Name = "Bug" },
+        };
+
+        context.Categories.AddRange(defaultCategories);
+        await context.SaveChangesAsync();
+
+        return Ok(new { message = "All categories deleted and recreated. IDs reset." });
+    }
+
 }
