@@ -13,10 +13,9 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-if(app.Environment.IsDevelopment()) {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// ⭐ Enable Swagger ALWAYS (Production + Development)
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
