@@ -2,7 +2,7 @@ name: Build and deploy ASP.Net Core app to an Azure Web App
 
 env:
   AZURE_WEBAPP_NAME: TaskManagerWeb
-  AZURE_WEBAPP_PACKAGE_PATH: 'TaskAPI'
+  AZURE_WEBAPP_PACKAGE_PATH: 'TasksApi'
   DOTNET_VERSION: '10.0'
 
 on:
@@ -26,19 +26,19 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore dependencies
-        run: dotnet restore ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+        run: dotnet restore "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
 
       - name: Build
-        run: dotnet build ${{ env.AZURE_WEBAPP_PACKAGE_PATH }} --configuration Release
+        run: dotnet build "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}" --configuration Release
 
       - name: Publish
-        run: dotnet publish ${{ env.AZURE_WEBAPP_PACKAGE_PATH }} -c Release -o published
+        run: dotnet publish "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}" -c Release -o "${{ github.workspace }}\published"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: app
-          path: published
+          path: "${{ github.workspace }}\published"
 
   deploy:
     runs-on: windows-latest
