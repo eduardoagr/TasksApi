@@ -108,7 +108,7 @@ public class CategoriesController(AppDbContext context) : ControllerBase {
              new() { Name = "Planned" },
              new() { Name = "Doing" },
              new() { Name = "Done" },
-             new() { Name = "Bug" },
+             new() { Name = "Bugs" },
         };
 
         context.Categories.AddRange(defaultCategories);
