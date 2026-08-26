@@ -8,8 +8,9 @@ public class TaskItem {
 
     public bool IsCompleted { get; set; }
 
+    public DateTime? CompletedAt { get; set; }
+
     public int CategoryId { get; set; }
 
-    public Category Category { get; set; }
-
+    public Category? Category { get; set; }
 }

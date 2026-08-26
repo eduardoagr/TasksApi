@@ -59,6 +59,7 @@ public class TasksController(AppDbContext context) : ControllerBase {
     // PUT: api/tasks/5
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateTask(int id, TaskItem task) {
+
         var existingTask = await context.Tasks.FindAsync(id);
 
         if(existingTask == null)
@@ -68,12 +69,61 @@ public class TasksController(AppDbContext context) : ControllerBase {
 
         if(existingTask.IsCompleted) {
 
-            context.Tasks.Remove(existingTask);
+            existingTask.CompletedAt = DateTime.UtcNow;
+
+            var doneCategory = await context.Categories.FirstOrDefaultAsync(c => c.Name == "Done");
+
+            if(doneCategory == null)
+                return BadRequest(new { message = "Done category not found." });
+
+            existingTask.CategoryId = doneCategory.Id;
+
             await context.SaveChangesAsync();
 
-            return Ok(new { message = "Task completed and removed.", id });
+            return Ok(new { message = "Task completed and moved to Done.", id });
         }
 
-        return Ok();
+        // If not completed, update other fields if needed
+        existingTask.Title = task.Title;
+        existingTask.CategoryId = task.CategoryId;
+
+        await context.SaveChangesAsync();
+
+        return Ok(new { message = "Task updated.", id });
+    }
+
+    // PUT: api/tasks/5/move/3
+    [HttpPut("{id}/move/{categoryId}")]
+    public async Task<IActionResult> MoveTask(int id, int categoryId) {
+
+        var task = await context.Tasks.FindAsync(id);
+
+        if(task == null)
+            return NotFound(new { message = "Task not found." });
+
+        var category = await context.Categories.FindAsync(categoryId);
+
+        if(category == null)
+            return NotFound(new { message = "Target category not found." });
+
+        // If moving to Done, set timestamp
+        if(category.Name == "Done") {
+            task.IsCompleted = true;
+            task.CompletedAt = DateTime.UtcNow;
+        } else {
+            task.IsCompleted = false;
+            task.CompletedAt = null;
+        }
+
+        task.CategoryId = categoryId;
+
+        await context.SaveChangesAsync();
+
+        return Ok(new
+        {
+            message = $"Task moved to category '{category.Name}'.",
+            taskId = id,
+            categoryId
+        });
     }
 }
