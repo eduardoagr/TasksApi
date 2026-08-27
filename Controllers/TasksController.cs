@@ -53,7 +53,9 @@ public class TasksController(AppDbContext context) : ControllerBase {
         var t = new TaskItem {
             Title = task.Title,
             IsCompleted = false,
-            CategoryId = task.CategoryId
+            CategoryId = task.CategoryId,
+            CompletedAt = null,
+            Category = null,
         };  
 
         context.Tasks.Add(t);
