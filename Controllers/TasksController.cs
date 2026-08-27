@@ -50,10 +50,16 @@ public class TasksController(AppDbContext context) : ControllerBase {
         if(!categoryExists)
             return BadRequest(new { message = "Category does not exist." });
 
-        context.Tasks.Add(task);
+        var t = new TaskItem {
+            Title = task.Title,
+            IsCompleted = false,
+            CategoryId = task.CategoryId
+        };  
+
+        context.Tasks.Add(t);
         await context.SaveChangesAsync();
 
-        return Ok(task);
+        return Ok(t);
     }
 
     // PUT: api/tasks/5
