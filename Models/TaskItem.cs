@@ -1,4 +1,6 @@
-﻿namespace TasksApi.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace TasksApi.Models;
 
 public class TaskItem {
 
@@ -12,5 +14,6 @@ public class TaskItem {
 
     public int CategoryId { get; set; }
 
+    [JsonIgnore]
     public Category? Category { get; set; }
 }
