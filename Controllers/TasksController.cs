@@ -134,4 +134,18 @@ public class TasksController(AppDbContext context) : ControllerBase {
             categoryId
         });
     }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteTask(int id) {
+
+        var task = await context.Tasks.FindAsync(id);
+
+        if(task == null)
+            return NotFound(new { message = "Task not found." });
+
+        context.Tasks.Remove(task);
+        await context.SaveChangesAsync();
+
+        return Ok(new { message = "Task deleted.", id });
+    }
 }
