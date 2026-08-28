@@ -28,14 +28,15 @@ public class TasksController(AppDbContext context) : ControllerBase {
     [HttpGet("category/{categoryId}")]
     public async Task<IActionResult> GetTasksByCategory(int categoryId) {
 
+        bool categoryExists = await context.Categories.AnyAsync(c => c.Id == categoryId);
+        if(!categoryExists)
+            return NotFound(new { message = "Category not found." });
+
         var tasks = await context.Tasks
             .Where(t => t.CategoryId == categoryId)
             .ToListAsync();
 
-        if(tasks == null || tasks.Count == 0)
-            return NotFound(new { message = "No tasks found for the specified category." });
-
-        return Ok(tasks);
+        return Ok(tasks); // empty list is fine
     }
 
     // POST: api/tasks
@@ -56,7 +57,7 @@ public class TasksController(AppDbContext context) : ControllerBase {
             CategoryId = task.CategoryId,
             CompletedAt = null,
             Category = null,
-        };  
+        };
 
         context.Tasks.Add(t);
         await context.SaveChangesAsync();
